@@ -5,8 +5,8 @@ wiki_dir: docs/wiki
 
 model:
   provider: bedrock       # anthropic | openai | azure | gemini | bedrock | vertexai | ollama
-  name: eu.anthropic.claude-sonnet-5-5
-  pricing: { input: 2.2, output: 11.0 }   # Bedrock eu-west-1, EU inference profile
+  name: eu.anthropic.claude-haiku-4-5-20251001-v1:0   # Sonnet 5.5 pending: AWS free plan has 0 quota for it
+  pricing: { input: 1.1, output: 5.5 }   # Bedrock eu-west-1, EU inference profile
   # effort: medium        # low | medium | high | xhigh | max; the provider's default when unset
   # api_base: https://llm-gateway.internal/v1   # any OpenAI-compatible endpoint (provider: openai)
 
