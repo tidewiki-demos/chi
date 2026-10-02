@@ -1,0 +1,244 @@
+{
+  "version": 1,
+  "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
+  "language": "en",
+  "updated_at": "2026-10-02T10:00:01Z",
+  "pages": {
+    "built-in-middleware": {
+      "title": "Built-in Middleware",
+      "summary": "A collection of production-ready middleware for logging, compression, authentication, timeouts, and request handling.",
+      "files": [
+        "middleware/basic_auth.go",
+        "middleware/clean_path.go",
+        "middleware/client_ip.go",
+        "middleware/client_ip_bench_test.go",
+        "middleware/client_ip_example_test.go",
+        "middleware/client_ip_test.go",
+        "middleware/compress.go",
+        "middleware/compress_test.go",
+        "middleware/content_charset.go",
+        "middleware/content_charset_test.go",
+        "middleware/content_encoding.go",
+        "middleware/content_encoding_test.go",
+        "middleware/content_type.go",
+        "middleware/content_type_test.go",
+        "middleware/get_head.go",
+        "middleware/get_head_test.go",
+        "middleware/heartbeat.go",
+        "middleware/logger.go",
+        "middleware/logger_test.go",
+        "middleware/maybe.go",
+        "middleware/middleware.go",
+        "middleware/middleware_test.go",
+        "middleware/nocache.go",
+        "middleware/page_route.go",
+        "middleware/path_rewrite.go",
+        "middleware/profiler.go",
+        "middleware/realip.go",
+        "middleware/realip_test.go",
+        "middleware/recoverer.go",
+        "middleware/recoverer_test.go",
+        "middleware/request_id.go",
+        "middleware/request_id_test.go",
+        "middleware/request_size.go",
+        "middleware/route_headers.go",
+        "middleware/route_headers_test.go",
+        "middleware/strip.go",
+        "middleware/strip_test.go",
+        "middleware/sunset.go",
+        "middleware/sunset_test.go",
+        "middleware/supress_notfound.go",
+        "middleware/terminal.go",
+        "middleware/throttle.go",
+        "middleware/throttle_test.go",
+        "middleware/timeout.go",
+        "middleware/url_format.go",
+        "middleware/url_format_test.go",
+        "middleware/value.go",
+        "middleware/wrap_writer.go",
+        "middleware/wrap_writer_test.go"
+      ],
+      "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
+      "hash": "451f1e8fe17b2ab6e8e7d01391f9a733ee3e71bc1e3c83b76525c2e930a0a642"
+    },
+    "context-values": {
+      "title": "Context Values and Request Handling",
+      "summary": "Manage request-scoped data using Go's context package, extract URL parameters, and pass values through middleware chains.",
+      "files": [
+        "context.go",
+        "context_test.go"
+      ],
+      "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
+      "hash": "c6a6376e3905c3fdb20df4b4a2aa5ae2a4750eaa239425c4492ecde0309842dd"
+    },
+    "examples-rest-api": {
+      "title": "REST API Examples",
+      "summary": "Production-ready examples demonstrating modular API design, resource routing, versioning, and graceful shutdown patterns.",
+      "files": [
+        "_examples/fileserver/data/notes.txt",
+        "_examples/fileserver/main.go",
+        "_examples/graceful/main.go",
+        "_examples/rest/go.mod",
+        "_examples/rest/main.go",
+        "_examples/rest/routes.json",
+        "_examples/rest/routes.md",
+        "_examples/todos-resource/main.go",
+        "_examples/todos-resource/todos.go",
+        "_examples/todos-resource/users.go",
+        "_examples/versions/data/article.go",
+        "_examples/versions/data/errors.go",
+        "_examples/versions/go.mod",
+        "_examples/versions/main.go",
+        "_examples/versions/presenter/v1/article.go",
+        "_examples/versions/presenter/v2/article.go",
+        "_examples/versions/presenter/v3/article.go"
+      ],
+      "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
+      "hash": "0060567b111d88985ef04e4d6319174c7617f568e977a819c5593fad07fe3327"
+    },
+    "examples-specialized": {
+      "title": "Specialized Examples",
+      "summary": "Examples for custom HTTP methods, request limits, monitoring, routing introspection, and utility patterns.",
+      "files": [
+        "_examples/README.md",
+        "_examples/custom-handler/main.go",
+        "_examples/limits/main.go",
+        "_examples/logging/main.go",
+        "_examples/router-walk/main.go"
+      ],
+      "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
+      "hash": "d020c1f54935b2c04e5fc4470f0876cf0d9738bdd9ca0b724e48ad91d770079d"
+    },
+    "getting-started": {
+      "title": "Getting Started",
+      "summary": "Quick introduction to chi's core concepts, installation, and a basic example to set up your first router.",
+      "files": [
+        "README.md"
+      ],
+      "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
+      "hash": "0ef2e2f300692be87b94de634ddc2343f3295b8b443900d9a2479aab1d1ec9b2"
+    },
+    "index": {
+      "title": "Overview",
+      "summary": "Entry point of the wiki.",
+      "files": [
+        "CONTRIBUTING.md",
+        "Makefile",
+        "README.md",
+        "go.mod"
+      ],
+      "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
+      "hash": "cf907f56fd11ade3524287f1418d615168cc51c444236dac5b7f995a0b2f4cd6"
+    },
+    "middleware-advanced": {
+      "title": "Advanced Middleware Patterns",
+      "summary": "Build complex request processing with real IP detection, client identification, request ID tracking, and conditional middleware execution.",
+      "files": [
+        "middleware/client_ip.go",
+        "middleware/client_ip_bench_test.go",
+        "middleware/client_ip_example_test.go",
+        "middleware/client_ip_test.go",
+        "middleware/maybe.go",
+        "middleware/realip.go",
+        "middleware/realip_test.go",
+        "middleware/request_id.go",
+        "middleware/request_id_test.go",
+        "middleware/wrap_writer.go",
+        "middleware/wrap_writer_test.go"
+      ],
+      "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
+      "hash": "e622c3e815401e694b6a195d90e8b0addba9c326c808a1aa578c123eaac6dc0d"
+    },
+    "middleware-content-handling": {
+      "title": "Content Encoding and Compression",
+      "summary": "Handle content negotiation, character encoding, compression, and URL format detection for flexible API responses.",
+      "files": [
+        "middleware/compress.go",
+        "middleware/compress_test.go",
+        "middleware/content_charset.go",
+        "middleware/content_charset_test.go",
+        "middleware/content_encoding.go",
+        "middleware/content_encoding_test.go",
+        "middleware/url_format.go",
+        "middleware/url_format_test.go"
+      ],
+      "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
+      "hash": "7b050aeb6e006a2c2cfc1e2b028c615172680b004f2d0b707cb24e1fb6c63222"
+    },
+    "middleware-fundamentals": {
+      "title": "Middleware Fundamentals",
+      "summary": "Understand middleware chains, composition, and how to build standard net/http middleware for chi routers.",
+      "files": [
+        "chain.go",
+        "middleware/middleware.go",
+        "middleware/middleware_test.go"
+      ],
+      "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
+      "hash": "bfafbd135e8d6cff8cfb95382d14507496295d43d9eedf31809b1c04f57ca248"
+    },
+    "middleware-logging-recovery": {
+      "title": "Logging and Error Recovery",
+      "summary": "Configure request logging and automatic panic recovery to handle errors gracefully in production services.",
+      "files": [
+        "middleware/logger.go",
+        "middleware/logger_test.go",
+        "middleware/recoverer.go",
+        "middleware/recoverer_test.go"
+      ],
+      "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
+      "hash": "2ea1d0b76a4bedacb25ea04686997a8e66629d80be99d33c5202cb1422f89d61"
+    },
+    "middleware-security": {
+      "title": "Security and Request Filtering",
+      "summary": "Apply security headers, control request sizes, manage rate limiting, and filter requests based on headers or content types.",
+      "files": [
+        "middleware/basic_auth.go",
+        "middleware/content_type.go",
+        "middleware/content_type_test.go",
+        "middleware/nocache.go",
+        "middleware/request_size.go",
+        "middleware/route_headers.go",
+        "middleware/route_headers_test.go",
+        "middleware/throttle.go",
+        "middleware/throttle_test.go",
+        "middleware/timeout.go"
+      ],
+      "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
+      "hash": "59e419a4ee5de87bd04884303e121a30626b9131c1a7d693a2bc9dd8b53046c1"
+    },
+    "route-matching-tree": {
+      "title": "Route Matching and Tree",
+      "summary": "Learn how chi's Patricia Radix trie-based router matches incoming requests and organizes routes for fast lookup.",
+      "files": [
+        "mux_test.go",
+        "path_value_test.go",
+        "pattern_test.go",
+        "tree.go",
+        "tree_test.go"
+      ],
+      "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
+      "hash": "369e33bffb52252744241a26166a55fc059b64decf2aee13c5ad87e6293b04b0"
+    },
+    "routing-basics": {
+      "title": "Routing Basics",
+      "summary": "Define routes with URL patterns, named parameters, wildcards, and HTTP methods using chi's Router interface.",
+      "files": [
+        "_examples/custom-method/main.go",
+        "_examples/hello-world/main.go",
+        "_examples/pathvalue/main.go",
+        "chi.go",
+        "mux.go"
+      ],
+      "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
+      "hash": "03c9a1c5bbe9779b220a3041d4a76f3e71548c3ddd99893c20948424a22e0928"
+    }
+  },
+  "unassigned": [
+    ".github/FUNDING.yml",
+    ".github/workflows/ci.yml",
+    ".gitignore",
+    "CHANGELOG.md",
+    "LICENSE",
+    "SECURITY.md"
+  ]
+}
