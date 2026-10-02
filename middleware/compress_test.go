@@ -109,6 +109,30 @@ func TestCompressor(t *testing.T) {
 	}
 }
 
+func TestCompressorDefaultTextTypes(t *testing.T) {
+	for _, contentType := range []string{"text/markdown", "text/csv", "text/vtt"} {
+		t.Run(contentType, func(t *testing.T) {
+			r := chi.NewRouter()
+			r.Use(Compress(5))
+			r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", contentType)
+				w.Write([]byte("textstring"))
+			})
+
+			ts := httptest.NewServer(r)
+			defer ts.Close()
+
+			resp, body := testRequestWithAcceptedEncodings(t, ts, "GET", "/", "gzip")
+			if body != "textstring" {
+				t.Errorf("response text doesn't match; expected:%q, got:%q", "textstring", body)
+			}
+			if got := resp.Header.Get("Content-Encoding"); got != "gzip" {
+				t.Errorf("expected encoding %q but got %q", "gzip", got)
+			}
+		})
+	}
+}
+
 func TestCompressorWildcards(t *testing.T) {
 	tests := []struct {
 		name       string
@@ -119,7 +143,7 @@ func TestCompressorWildcards(t *testing.T) {
 	}{
 		{
 			name:       "defaults",
-			typesCount: 10,
+			typesCount: len(defaultCompressibleContentTypes),
 		},
 		{
 			name:       "no wildcard",
@@ -129,12 +153,22 @@ func TestCompressorWildcards(t *testing.T) {
 		{
 			name:    "invalid wildcard #1",
 			types:   []string{"audio/*wav"},
-			recover: "middleware/compress: Unsupported content-type wildcard pattern 'audio/*wav'. Only '/*' supported",
+			recover: "middleware/compress: Unsupported content-type wildcard pattern 'audio/*wav'. Only '<type>/*' supported",
 		},
 		{
 			name:    "invalid wildcard #2",
 			types:   []string{"application*/*"},
-			recover: "middleware/compress: Unsupported content-type wildcard pattern 'application*/*'. Only '/*' supported",
+			recover: "middleware/compress: Unsupported content-type wildcard pattern 'application*/*'. Only '<type>/*' supported",
+		},
+		{
+			name:    "catch-all wildcard #1",
+			types:   []string{"*/*"},
+			recover: "middleware/compress: Unsupported content-type wildcard pattern '*/*'. Only '<type>/*' supported",
+		},
+		{
+			name:    "catch-all wildcard #2",
+			types:   []string{"/*"},
+			recover: "middleware/compress: Unsupported content-type wildcard pattern '/*'. Only '<type>/*' supported",
 		},
 		{
 			name:    "valid wildcard",
