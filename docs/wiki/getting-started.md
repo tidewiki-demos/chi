@@ -120,6 +120,10 @@ r.Use(middleware.Recoverer)
 r.Use(middleware.Timeout(60 * time.Second))
 ```
 
+## Decisions
+
+The cite markers in this page point to chi/v5 documentation. This was done in commit 167e1e3bd039 to ensure links resolve to the correct version. The old `github.com/go-chi/chi` module path resolves to stale v1 documentation which lacks some newer middleware like `ClientIP`.
+
 ## Next Steps
 
 - [Routing Basics](routing-basics.md) covers route definition patterns and parameters in depth

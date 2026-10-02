@@ -8,7 +8,7 @@ Build complex request processing workflows by combining chi's middleware primiti
 
 When your service sits behind reverse proxies, accurately identifying the client IP requires careful header parsing. Chi provides multiple strategies depending on your infrastructure.
 
-[`middleware/client_ip.go:18-54`](../../middleware/client_ip.go#L18-L54)
+[`middleware/client_ip.go:19-54`](../../middleware/client_ip.go#L19-L54)
 
 ### Single-IP Headers
 
@@ -25,7 +25,7 @@ r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 
 Examples of safe headers: `X-Real-IP` (Nginx), `X-Client-IP` (Apache), `CF-Connecting-IP` (Cloudflare). **Do not use** `True-Client-IP`, `X-Azure-ClientIP`, or `Fastly-Client-IP` unless your edge strips inbound values—these pass through from the client by default in those products.
 
-[`middleware/client_ip.go:41-54`](../../middleware/client_ip.go#L41-L54)
+[`middleware/client_ip.go:42-54`](../../middleware/client_ip.go#L42-L54)
 
 ### X-Forwarded-For with Trusted CIDR Ranges
 
@@ -44,7 +44,7 @@ r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 
 This approach is robust against spoofed IPs prepended by attackers—the outermost proxy (closest to the client) is the only hop that has NOT been under attacker control, so its contribution to the chain is trustworthy. Most CDNs publish their IP ranges: Cloudflare (https://www.cloudflare.com/ips/), AWS (https://ip-ranges.amazonaws.com/ip-ranges.json), Fastly (https://api.fastly.com/public-ip-list), and Google Cloud (https://www.gstatic.com/ipranges/cloud.json).
 
-[`middleware/client_ip.go:56-117`](../../middleware/client_ip.go#L56-L117)
+[`middleware/client_ip.go:57-118`](../../middleware/client_ip.go#L57-L118)
 
 ### X-Forwarded-For with Proxy Count
 
@@ -67,7 +67,7 @@ This middleware reads ONLY X-Forwarded-For; it does not inspect `r.RemoteAddr`. 
 
 If the XFF chain has fewer than `numTrustedProxies` entries, no client IP is set (fail-closed).
 
-[`middleware/client_ip.go:119-173`](../../middleware/client_ip.go#L119-L173)
+[`middleware/client_ip.go:120-174`](../../middleware/client_ip.go#L120-L174)
 
 ### Direct Internet (No Proxy)
 
@@ -83,7 +83,7 @@ r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 
 Behind a reverse proxy, `RemoteAddr` is the proxy's IP, not the client's.
 
-[`middleware/client_ip.go:175-198`](../../middleware/client_ip.go#L175-L198)
+[`middleware/client_ip.go:176-199`](../../middleware/client_ip.go#L176-L199)
 
 ### Retrieving the Client IP
 
@@ -105,7 +105,7 @@ r.Get("/admin", func(w http.ResponseWriter, r *http.Request) {
 })
 ```
 
-[`middleware/client_ip.go:200-218`](../../middleware/client_ip.go#L200-L218)
+[`middleware/client_ip.go:201-219`](../../middleware/client_ip.go#L201-L219)
 
 ### Security Properties
 

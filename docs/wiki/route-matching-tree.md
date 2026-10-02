@@ -86,7 +86,7 @@ When a route is not found but other methods are registered on the same path, chi
 
 ## Routes and Mount Stubs
 
-When using `Mount()` or `Route()`, chi installs a synthetic "stub" handler on the mount pattern to connect it to the subrouter. The `routes()` method uses the `equalHandlers` function [`tree.go:696-714`](../../tree.go#L696-L714) to identify and hide only the stub handler itself, while preserving any real handler that shares the same pattern. This prevents internal routing infrastructure from leaking into the public Routes API.
+When using `Mount()` or `Route()`, chi installs a synthetic "stub" handler on the mount pattern to connect it to the subrouter. The `routes()` method uses the `equalHandlers` function [`tree.go:693-714`](../../tree.go#L693-L714) to identify and hide only the stub handler itself, while preserving any real handler that shares the same pattern. This prevents internal routing infrastructure from leaking into the public Routes API.
 
 The tree structure and matching algorithm together ensure that:
 - Route lookup is **O(k)** where k is the depth of the pattern (very fast)

@@ -1,8 +1,8 @@
 {
   "version": 1,
-  "commit": "5bd1f81b3f25936a6609806aafff59b6c227a0db",
+  "commit": "ed6eac63e0c9a7b1fe85aa807a86b76c2cf1ab82",
   "language": "en",
-  "updated_at": "2026-10-02T12:07:08Z",
+  "updated_at": "2026-10-02T12:19:11Z",
   "pages": {
     "built-in-middleware": {
       "title": "Built-in Middleware",
@@ -25,6 +25,7 @@
         "middleware/get_head.go",
         "middleware/get_head_test.go",
         "middleware/heartbeat.go",
+        "middleware/heartbeat_test.go",
         "middleware/logger.go",
         "middleware/logger_test.go",
         "middleware/maybe.go",
@@ -58,18 +59,19 @@
         "middleware/wrap_writer.go",
         "middleware/wrap_writer_test.go"
       ],
-      "commit": "5bd1f81b3f25936a6609806aafff59b6c227a0db",
-      "hash": "24dc044ed832fa1a5caa396331421f662e8d6f253f679ab8b9b62f25b5a032dc"
+      "commit": "ed6eac63e0c9a7b1fe85aa807a86b76c2cf1ab82",
+      "hash": "321a584530783dbd5f7c3aafb0c6d6dd3556590d86232e8f59671420202d1063"
     },
     "context-values": {
       "title": "Context Values and Request Handling",
       "summary": "Manage request-scoped data using Go's context package, extract URL parameters, and pass values through middleware chains.",
       "files": [
         "context.go",
-        "context_test.go"
+        "context_test.go",
+        "middleware/value_test.go"
       ],
-      "commit": "5bd1f81b3f25936a6609806aafff59b6c227a0db",
-      "hash": "5b44c3fb6983a95196ac648a96499c0841225359a78352dbbcb85706919b8775"
+      "commit": "ed6eac63e0c9a7b1fe85aa807a86b76c2cf1ab82",
+      "hash": "f06c238e2bf90b3d145b42987fe4fa810e52d424e02fbf45e946ccab43883ce2"
     },
     "examples-rest-api": {
       "title": "REST API Examples",
@@ -115,8 +117,8 @@
       "files": [
         "README.md"
       ],
-      "commit": "5bd1f81b3f25936a6609806aafff59b6c227a0db",
-      "hash": "eb8c526b461a4762dd3da83c40d0bc3f5ae9079502991c5cc7284f8ae85ae3a0"
+      "commit": "ed6eac63e0c9a7b1fe85aa807a86b76c2cf1ab82",
+      "hash": "8e356e9ea9934d58585c7599890b3caad2904410d167e99cbf09931c10a3feb5"
     },
     "index": {
       "title": "Overview",
@@ -127,8 +129,8 @@
         "README.md",
         "go.mod"
       ],
-      "commit": "5bd1f81b3f25936a6609806aafff59b6c227a0db",
-      "hash": "51fcb37c74884289117e623a1a87a480b663e5834c676ff767a42d7cd47d529a"
+      "commit": "ed6eac63e0c9a7b1fe85aa807a86b76c2cf1ab82",
+      "hash": "7f7418a8840084930ce7db02ef2c181bc8b24430e5d48eeda20ab7f3bff3c152"
     },
     "middleware-advanced": {
       "title": "Advanced Middleware Patterns",
@@ -146,8 +148,8 @@
         "middleware/wrap_writer.go",
         "middleware/wrap_writer_test.go"
       ],
-      "commit": "5bd1f81b3f25936a6609806aafff59b6c227a0db",
-      "hash": "0b40297f62c10c53c6bac07a6b7db06ef9a133bd1a6d80b838078db7c99a2467"
+      "commit": "ed6eac63e0c9a7b1fe85aa807a86b76c2cf1ab82",
+      "hash": "19e8dd0b97e776ccc0bbdddeacbcbd3c9d4114de22c2cc526090812ae73da078"
     },
     "middleware-content-handling": {
       "title": "Content Encoding and Compression",
@@ -162,18 +164,19 @@
         "middleware/url_format.go",
         "middleware/url_format_test.go"
       ],
-      "commit": "5bd1f81b3f25936a6609806aafff59b6c227a0db",
-      "hash": "4eba424847fd83f07aca629fd3d029c4bbe980b0d100e7bad44e44dbce8cfd89"
+      "commit": "ed6eac63e0c9a7b1fe85aa807a86b76c2cf1ab82",
+      "hash": "71467ca332b2d6c8f1e5bb796bc562e1b9cebd2cce617e03bdbf91fd0768742e"
     },
     "middleware-fundamentals": {
       "title": "Middleware Fundamentals",
       "summary": "Understand middleware chains, composition, and how to build standard net/http middleware for chi routers.",
       "files": [
         "chain.go",
+        "middleware/clean_path_test.go",
         "middleware/middleware.go",
         "middleware/middleware_test.go"
       ],
-      "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
+      "commit": "ed6eac63e0c9a7b1fe85aa807a86b76c2cf1ab82",
       "hash": "bfafbd135e8d6cff8cfb95382d14507496295d43d9eedf31809b1c04f57ca248"
     },
     "middleware-logging-recovery": {
@@ -183,16 +186,18 @@
         "middleware/logger.go",
         "middleware/logger_test.go",
         "middleware/recoverer.go",
-        "middleware/recoverer_test.go"
+        "middleware/recoverer_test.go",
+        "middleware/terminal_test.go"
       ],
-      "commit": "5bd1f81b3f25936a6609806aafff59b6c227a0db",
-      "hash": "36744231d84842dcbccbc2c38dfabb8461e0fcc6fd2a7551fbe76bce62ba2dba"
+      "commit": "ed6eac63e0c9a7b1fe85aa807a86b76c2cf1ab82",
+      "hash": "034396c20d8b68f5f764acae8d879999e688162d0cea3fdc75388f656dd9092c"
     },
     "middleware-security": {
       "title": "Security and Request Filtering",
       "summary": "Apply security headers, control request sizes, manage rate limiting, and filter requests based on headers or content types.",
       "files": [
         "middleware/basic_auth.go",
+        "middleware/basic_auth_test.go",
         "middleware/content_type.go",
         "middleware/content_type_test.go",
         "middleware/nocache.go",
@@ -203,7 +208,7 @@
         "middleware/throttle_test.go",
         "middleware/timeout.go"
       ],
-      "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
+      "commit": "ed6eac63e0c9a7b1fe85aa807a86b76c2cf1ab82",
       "hash": "59e419a4ee5de87bd04884303e121a30626b9131c1a7d693a2bc9dd8b53046c1"
     },
     "route-matching-tree": {
@@ -216,8 +221,8 @@
         "tree.go",
         "tree_test.go"
       ],
-      "commit": "5bd1f81b3f25936a6609806aafff59b6c227a0db",
-      "hash": "7fd2264f9f42b551947d7052ebc0589ba7b19bf28a74af944f1b223ae939240f"
+      "commit": "ed6eac63e0c9a7b1fe85aa807a86b76c2cf1ab82",
+      "hash": "95194010f84817dfcaf819fcdcd1f810ebf50f429049f66f541a607bed859a9b"
     },
     "routing-basics": {
       "title": "Routing Basics",
@@ -227,9 +232,10 @@
         "_examples/hello-world/main.go",
         "_examples/pathvalue/main.go",
         "chi.go",
+        "middleware/path_rewrite_test.go",
         "mux.go"
       ],
-      "commit": "5bd1f81b3f25936a6609806aafff59b6c227a0db",
+      "commit": "ed6eac63e0c9a7b1fe85aa807a86b76c2cf1ab82",
       "hash": "e43cf5d86ff662962b98085aa0f7fe6451bb7c9f64a259ac2b1135a35015a18f"
     }
   },

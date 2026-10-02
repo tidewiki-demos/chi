@@ -8,19 +8,19 @@ Chi provides a collection of production-ready middleware for common HTTP concern
 
 Extracting the client's real IP address requires careful handling depending on your network architecture. Chi provides several middleware options to safely extract the client IP from different sources, stored in the request context.
 
-[`middleware/client_ip.go:11-12`](../../middleware/client_ip.go#L11-L12)
+[`middleware/client_ip.go:12-13`](../../middleware/client_ip.go#L12-L13)
 
 **Choose exactly one based on your deployment:**
 
-- [`middleware/client_ip.go:41-54`](../../middleware/client_ip.go#L41-L54) — Use when your reverse proxy sets a dedicated single-IP header (e.g., Nginx with ngx_http_realip_module, Apache with mod_remoteip, or Cloudflare) that **unconditionally overwrites** the value on every request.
+- [`middleware/client_ip.go:42-55`](../../middleware/client_ip.go#L42-L55) — Use when your reverse proxy sets a dedicated single-IP header (e.g., Nginx with ngx_http_realip_module, Apache with mod_remoteip, or Cloudflare) that **unconditionally overwrites** the value on every request.
 
-- [`middleware/client_ip.go:56-117`](../../middleware/client_ip.go#L56-L117) — Use when you sit behind one or more reverse proxies whose IP ranges you can enumerate as CIDR blocks. The middleware walks the X-Forwarded-For chain right-to-left, skipping trusted entries. Most CDNs publish their IP ranges (Cloudflare, AWS, Fastly, Google Cloud).
+- [`middleware/client_ip.go:57-118`](../../middleware/client_ip.go#L57-L118) — Use when you sit behind one or more reverse proxies whose IP ranges you can enumerate as CIDR blocks. The middleware walks the X-Forwarded-For chain right-to-left, skipping trusted entries. Most CDNs publish their IP ranges (Cloudflare, AWS, Fastly, Google Cloud).
 
-- [`middleware/client_ip.go:119-173`](../../middleware/client_ip.go#L119-L173) — Use when you know exactly how many reverse proxies sit between you and the internet, but their IPs are dynamic (autoscaling pools, ephemeral containers). This variant is brittle to architecture changes; prefer explicit CIDRs when possible.
+- [`middleware/client_ip.go:120-174`](../../middleware/client_ip.go#L120-L174) — Use when you know exactly how many reverse proxies sit between you and the internet, but their IPs are dynamic (autoscaling pools, ephemeral containers). This variant is brittle to architecture changes; prefer explicit CIDRs when possible.
 
-- [`middleware/client_ip.go:175-198`](../../middleware/client_ip.go#L175-L198) — Use when this server is directly connected to the public internet with no reverse proxy in front.
+- [`middleware/client_ip.go:176-199`](../../middleware/client_ip.go#L176-L199) — Use when this server is directly connected to the public internet with no reverse proxy in front.
 
-Retrieve the IP in your handler using [`middleware/client_ip.go:200-218`](../../middleware/client_ip.go#L200-L218):
+Retrieve the IP in your handler using [`middleware/client_ip.go:201-210`](../../middleware/client_ip.go#L201-L210):
 
 ```go
 import "github.com/go-chi/chi/v5/middleware"
@@ -48,7 +48,7 @@ r.Use(middleware.Recoverer)
 r.Get("/", handler)
 ```
 
-The logger uses a [`middleware/logger.go:43-59`](../../middleware/logger.go#L43-L59) that accepts a custom `LogFormatter`. The default formatter stores itself in the request context via [`middleware/logger.go:80-84`](../../middleware/logger.go#L80-L84), allowing handlers and other middleware to access and update log entries.
+The logger uses a [`middleware/logger.go:44-59`](../../middleware/logger.go#L44-L59) that accepts a custom `LogFormatter`. The default formatter stores itself in the request context via [`middleware/logger.go:80-84`](../../middleware/logger.go#L80-L84), allowing handlers and other middleware to access and update log entries.
 
 ### Recoverer
 
@@ -88,7 +88,7 @@ r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 })
 ```
 
-The middleware [`middleware/compress.go:72-142`](../../middleware/compress.go#L72-L142) creates a compressor. Catch-all wildcards ("*/*", "/*") are rejected; pass explicit content types instead. You can [`middleware/compress.go:159-195`](../../middleware/compress.go#L159-L195) to add custom encoders like Brotli.
+The middleware [`middleware/compress.go:72-142`](../../middleware/compress.go#L72-L142) creates a compressor. Catch-all wildcards ("*/*", "/*") are rejected; pass explicit content types instead. You can [`middleware/compress.go:149-166`](../../middleware/compress.go#L149-L166) to add custom encoders like Brotli.
 
 ### AllowContentType
 
@@ -110,7 +110,7 @@ r.Post("/", middleware.AllowContentEncoding("gzip", "deflate"), handler)
 
 ### ContentCharset
 
-[`middleware/content_charset.go:11-26`](../../middleware/content_charset.go#L11-L26) validates the charset in Content-Type headers.
+[`middleware/content_charset.go:9-31`](../../middleware/content_charset.go#L9-L31) validates the charset in Content-Type headers. Requests without a body (ContentLength == 0) are always allowed.
 
 ```go
 r.Post("/", middleware.ContentCharset("UTF-8", ""), handler)
@@ -343,12 +343,14 @@ r.Use(middleware.PathRewrite("/old", "/new"))
 
 ## Decisions
 
-**ClientIPFromXFFTrustedProxies documentation and examples:** Updated to emphasize that this counting variant is brittle to architecture changes and should only be used when proxy IPs are dynamic and unpublishable. Added a "deployment recipe table" mapping common deployments to numTrustedProxies values, plus a verification step to catch misconfiguration before going live. Added links to CDN-published IP lists (Cloudflare, AWS, Fastly, Google Cloud). Added a new example showing how client-prepended spoofed entries are ignored. ([bc02284e9db2](https://github.com/go-chi/chi/commit/bc02284e9db2), [60ecea54191a](https://github.com/go-chi/chi/commit/60ecea54191a))
+**ContentCharset skips bodyless requests:** ContentCharset middleware now skips validation for requests where ContentLength == 0, allowing GET requests and other methods without a body to pass through even if no Content-Type header is set. This prevents false rejections of legitimate requests like GET with no payload. ([87c34a24a649](https://github.com/go-chi/chi/commit/87c34a24a649))
 
 **Default compressible content types expanded:** Added text/markdown, text/csv, text/vtt, application/xml, and text/xml to the default list because these compress very effectively and are commonly served by web applications. ([d7b767bcbea5](https://github.com/go-chi/chi/commit/d7b767bcbea5), [60ecea54191a](https://github.com/go-chi/chi/commit/60ecea54191a))
 
 **Catch-all compress wildcards rejected:** Passing catch-all patterns like "*/*" or "/*" to NewCompressor now panics at construction instead of silently compressing nothing (or everything). These patterns waste CPU on already-compressed types like zip, jpeg, and png. Users must pass explicit content types instead. ([38939062c5df](https://github.com/go-chi/chi/commit/38939062c5df))
 
-**Logger panic output respects NoColor setting:** Fixed defaultLogEntry.Panic to respect the DefaultLogFormatter's NoColor field by threading the flag through printPrettyStack. This ensures panic backtraces don't emit ANSI color codes when NoColor is true. ([878fe71fc9e5](https://github.com/go-chi/chi/commit/878fe71fc9e5), [7fcb8a20364d](https://github.com/go-chi/chi/commit/7fcb8a20364d))
+**Brotli compression example updated:** SetEncoder documentation now shows two Brotli implementations: Google's google/brotli/go/cbrotli (with cgo) and andybalholm/brotli (Cgo-free alternative). This gives users flexibility in choosing their compression library based on deployment constraints. ([735ae2b87f8c](https://github.com/go-chi/chi/commit/735ae2b87f8c))
 
-**Build directive cleanup:** Removed obsolete "// +build" directives and Go 1.23 build constraints as Go 1.23 is now the minimum version. ([3b50c7cc35ff](https://github.com/go-chi/chi/commit/3b50c7cc35ff))
+**Flush calls now honor Discard mode:** The WrapResponseWriter implementation was refactored so that Flush() respects the Discard flag, preventing flushes from reaching the original ResponseWriter when discard mode is enabled. Additionally, response status is now properly recorded when flushing occurs before any body is written. ([b1c9ab47626c](https://github.com/go-chi/chi/commit/b1c9ab47626c), [3d1777a1ef88](https://github.com/go-chi/chi/commit/3d1777a1ef88))
+
+**Type signature modernization:** Replaced `interface{}` with `any` throughout middleware packages to align with Go 1.18+ conventions. Updated benchmark loops to use b.Loop() for Go 1.24 compatibility. ([50ef4e4c311f](https://github.com/go-chi/chi/commit/50ef4e4c311f), [756fcb8d630f](https://github.com/go-chi/chi/commit/756fcb8d630f))

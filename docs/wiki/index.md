@@ -105,3 +105,9 @@ make test-middleware  # Test middleware package
 ```
 
 [`CONTRIBUTING.md:5-11`](../../CONTRIBUTING.md#L5-L11) You'll need Go installed. Clone the repository and cd into it to run these commands.
+
+## Decisions
+
+**Minimum Go version bumped to 1.24** (commit 756fcb8d630f): Chi now requires Go 1.24 or later to use `b.Loop()` and keep up with recent Go releases. The project supports the four most recent major versions of Go.
+
+**Middleware documentation links updated to chi/v5** (commit 167e1e3bd039): All middleware package links now point to `github.com/go-chi/chi/v5` on pkg.go.dev instead of the older module path. This ensures documentation for all middlewares, including newer ones like `ClientIP`, is accessible and current.
