@@ -37,8 +37,8 @@ Use `RequestLogger` with a custom `LogFormatter` to control log output:
 
 ```go
 type LogEntry interface {
-	Write(status, bytes int, header http.Header, elapsed time.Duration, extra interface{})
-	Panic(v interface{}, stack []byte)
+	Write(status, bytes int, header http.Header, elapsed time.Duration, extra any)
+	Panic(v any, stack []byte)
 }
 
 type LogFormatter interface {
@@ -46,7 +46,7 @@ type LogFormatter interface {
 }
 ```
 
-[`middleware/logger.go:61-72`](../../middleware/logger.go#L61-L72)
+[`middleware/logger.go:69-72`](../../middleware/logger.go#L69-L72)
 
 Example with a custom formatter:
 

@@ -34,7 +34,7 @@ func main() {
 }
 ```
 
-The middleware [`middleware/compress.go:199-220`](../../middleware/compress.go#L199-L220) wraps response bodies with a compression writer when the client accepts the encoding. It automatically:
+The middleware [`middleware/compress.go:207-228`](../../middleware/compress.go#L207-L228) wraps response bodies with a compression writer when the client accepts the encoding. It automatically:
 
 - Parses the `Accept-Encoding` request header to determine what algorithms the client supports
 - Selects the best encoder based on configured precedence
@@ -55,7 +55,7 @@ Specify custom types when creating the middleware:
 r.Use(middleware.Compress(5, "application/json", "text/*"))
 ```
 
-Wildcard patterns like `text/*` are supported [`middleware/compress.go:82-86`](../../middleware/compress.go#L82-L86) to match any subtype. Only the `<type>/*` suffix pattern is allowed. Catch-all wildcards (`*/*` and `/*`) are rejected [`middleware/compress.go:83-85`](../../middleware/compress.go#L83-L85).
+Wildcard patterns like `text/*` are supported [`middleware/compress.go:82-86`](../../middleware/compress.go#L82-L86) to match any subtype. Only the `<type>/*` suffix pattern is allowed. Catch-all wildcards (`*/*` and `/*`) are rejected [`middleware/compress.go:79-85`](../../middleware/compress.go#L79-L85).
 
 ### Custom Encoders
 
@@ -64,13 +64,12 @@ Extend the middleware with additional compression algorithms using `SetEncoder`:
 ```go
 compressor := middleware.NewCompressor(5, "application/json")
 compressor.SetEncoder("br", func(w io.Writer, level int) io.Writer {
-	// Return a Brotli encoder wrapping w
-	return brotliEncoder(w, level)
+	return cbrotli.NewWriter(w, cbrotli.WriterOptions{Quality: level})
 })
 r.Use(compressor.Handler)
 ```
 
-The encoder function receives the response writer and compression level, and returns a writer that compresses data. [`middleware/compress.go:159-195`](../../middleware/compress.go#L159-L195)
+The encoder function receives the response writer and compression level, and returns a writer that compresses data. [`middleware/compress.go:167-203`](../../middleware/compress.go#L167-L203)
 
 ### Important: Set Content-Type Header
 
@@ -85,7 +84,7 @@ r.Get("/data", func(w http.ResponseWriter, r *http.Request) {
 
 ## Request Charset Validation
 
-The `ContentCharset` middleware [`middleware/content_charset.go:11-26`](../../middleware/content_charset.go#L11-L26) validates that incoming requests specify an acceptable character encoding in their `Content-Type` header, returning 415 Unsupported Media Type if validation fails.
+The `ContentCharset` middleware [`middleware/content_charset.go:9-32`](../../middleware/content_charset.go#L9-L32) validates that incoming requests specify an acceptable character encoding in their `Content-Type` header, returning 415 Unsupported Media Type if validation fails.
 
 ```go
 package main
@@ -111,7 +110,7 @@ func main() {
 }
 ```
 
-The middleware parses the `charset` parameter from the `Content-Type` header and compares it case-insensitively [`middleware/content_charset.go:28-34`](../../middleware/content_charset.go#L28-L34) against allowed values. Pass an empty string to allow requests with no charset specified:
+The middleware parses the `charset` parameter from the `Content-Type` header and compares it case-insensitively [`middleware/content_charset.go:34-40`](../../middleware/content_charset.go#L34-L40) against allowed values. Requests without a body (`ContentLength == 0`) are always allowed [`middleware/content_charset.go:19-22`](../../middleware/content_charset.go#L19-L22). Pass an empty string to allow requests with no charset specified:
 
 ```go
 r.Use(middleware.ContentCharset("UTF-8", ""))  // Accept UTF-8 or no charset
@@ -195,6 +194,10 @@ The middleware operates on the `RoutePath` from chi's route context [`middleware
 
 **Gzip preferred over deflate**: The Compress middleware [`middleware/compress.go:114-129`](../../middleware/compress.go#L114-L129) prioritizes gzip encoding over deflate because older browsers incorrectly handle deflate compression (expecting raw DEFLATE without zlib wrapper). Modern browsers handle both, but gzip is more reliable and consistently implemented across clients.
 
-**Reject catch-all wildcard patterns**: NewCompressor rejects `*/*` and `/*` patterns [[cite:middleware/compress.go:69-71, 83-85]] because compressing every response wastes CPU on already-compressed types like zip, jpeg, and png. Users should pass explicit content types instead.
+**Reject catch-all wildcard patterns**: NewCompressor rejects `*/*` and `/*` patterns [`middleware/compress.go:79-85`](../../middleware/compress.go#L79-L85) because compressing every response wastes CPU on already-compressed types like zip, jpeg, and png. Users should pass explicit content types instead.
 
-**Expanded default compressible types**: The default list now includes text/markdown, text/csv, text/vtt, application/xml, and text/xml [[cite:middleware/compress.go:21-23, 29-30]] because these formats compress effectively and are commonly served by web applications.
+**Expanded default compressible types**: The default list now includes text/markdown, text/csv, text/vtt, application/xml, and text/xml [`middleware/compress.go:16-32`](../../middleware/compress.go#L16-L32) because these formats compress effectively and are commonly served by web applications.
+
+**Updated Brotli documentation with current packages**: The SetEncoder documentation [`middleware/compress.go:149-166`](../../middleware/compress.go#L149-L166) now references Google's official brotli package (`github.com/google/brotli/go/cbrotli`) and provides an alternative Cgo-free implementation, replacing outdated package references from #1007.
+
+**ContentCharset skips validation for bodyless requests**: The middleware now checks `ContentLength == 0` and skips validation for such requests, fixing the issue where GET requests without a body were incorrectly rejected when they lacked a Content-Type header (#1158).
