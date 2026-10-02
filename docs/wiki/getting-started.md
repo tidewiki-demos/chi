@@ -16,13 +16,13 @@ go get -u github.com/go-chi/chi/v5
 
 chi's design rests on a few key ideas:
 
-**Router**: A `chi.Router` is a composable HTTP handler that matches incoming requests to handlers based on their method and path. [`README.md:59`](../../README.md#L59) It's built on a Patricia Radix trie data structure for efficient route matching. [`README.md:177`](../../README.md#L177)
+**Router**: A `chi.Router` is a composable HTTP handler that matches incoming requests to handlers based on their method and path. [`README.md:177-178`](../../README.md#L177-L178) It's built on a Patricia Radix trie data structure for efficient route matching. [`README.md:177`](../../README.md#L177)
 
-**Middleware**: chi uses standard `net/http` middleware—functions that wrap handlers and execute code before or after them. [`README.md:257-262`](../../README.md#L257-L262) Any middleware compatible with `net/http` works with chi. [`README.md:259`](../../README.md#L259)
+**Middleware**: chi uses standard `net/http` middleware—functions that wrap handlers and execute code before or after them. [`README.md:260-263`](../../README.md#L260-L263) Any middleware compatible with `net/http` works with chi. [`README.md:32`](../../README.md#L32)
 
 **Context Values**: chi leverages Go's `context` package to pass request-scoped values (like user IDs or request IDs) through middleware and handlers without using global state. [`README.md:8-9`](../../README.md#L8-L9)
 
-**URL Parameters**: Routes support named parameters like `/users/{userID}` and wildcards like `/admin/*`. You retrieve these at runtime using `chi.URLParam()`. [`README.md:251-254`](../../README.md#L251-L254)
+**URL Parameters**: Routes support named parameters like `/users/{userID}` and wildcards like `/admin/*`. You retrieve these at runtime using `chi.URLParam()`. [`README.md:252-255`](../../README.md#L252-L255)
 
 ## Your First Router
 
@@ -58,9 +58,9 @@ This creates a router, attaches the built-in Logger middleware, and registers a 
 
 ## Router Methods
 
-The `Router` interface provides methods for defining routes and middleware: [`README.md:182-249`](../../README.md#L182-L249)
+The `Router` interface provides methods for defining routes and middleware: [`README.md:185-234`](../../README.md#L185-L234)
 
-- **HTTP method routing**: `Get()`, `Post()`, `Put()`, `Delete()`, `Patch()`, etc., which accept a pattern and handler function
+- **HTTP method routing**: `Get()`, `Post()`, `Put()`, `Delete()`, `Patch()`, `Query()`, etc., which accept a pattern and handler function
 - **Generic routing**: `Handle()` and `HandleFunc()` for handlers matching all HTTP methods
 - **Middleware**: `Use()` to add global middleware, `With()` to add inline middleware for specific routes
 - **Composition**: `Route()` to mount sub-routers at a path, `Mount()` to attach another `http.Handler`, and `Group()` to organize routes with fresh middleware
@@ -89,7 +89,7 @@ func MyHandler(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-[`README.md:294-304`](../../README.md#L294-L304)
+[`README.md:295-305`](../../README.md#L295-L305)
 
 ## URL Parameters
 
@@ -102,13 +102,13 @@ r.Get("/users/{userID}", func(w http.ResponseWriter, r *http.Request) {
 })
 ```
 
-[`README.md:313-327`](../../README.md#L313-L327)
+[`README.md:314-328`](../../README.md#L314-L328)
 
 Routes also support regex patterns: `/articles/{slug:[a-z-]+}` matches only lowercase letters and hyphens. [`README.md:112`](../../README.md#L112)
 
 ## Built-in Middleware
 
-chi includes a `middleware` package with common utilities like `Logger`, `Recoverer` (for panic recovery), `RequestID`, and `Timeout`. [`README.md:330-335`](../../README.md#L330-L335) See [Built-in Middleware](built-in-middleware.md) for details on all available middleware.
+chi includes a `middleware` package with common utilities like `Logger`, `Recoverer` (for panic recovery), `RequestID`, and `Timeout`. [`README.md:333-336`](../../README.md#L333-L336) See [Built-in Middleware](built-in-middleware.md) for details on all available middleware.
 
 A typical middleware stack looks like: [`README.md:88-97`](../../README.md#L88-L97)
 

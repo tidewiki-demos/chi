@@ -8,7 +8,7 @@ Build complex request processing workflows by combining chi's middleware primiti
 
 When your service sits behind reverse proxies, accurately identifying the client IP requires careful header parsing. Chi provides multiple strategies depending on your infrastructure.
 
-[`middleware/client_ip.go:19-54`](../../middleware/client_ip.go#L19-L54)
+[`middleware/client_ip.go:18-54`](../../middleware/client_ip.go#L18-L54)
 
 ### Single-IP Headers
 
@@ -42,9 +42,9 @@ r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 })
 ```
 
-This approach is robust against spoofed IPs prepended by attackers—the outermost proxy (closest to the client) is the only hop that has NOT been under attacker control, so its contribution to the chain is trustworthy.
+This approach is robust against spoofed IPs prepended by attackers—the outermost proxy (closest to the client) is the only hop that has NOT been under attacker control, so its contribution to the chain is trustworthy. Most CDNs publish their IP ranges: Cloudflare (https://www.cloudflare.com/ips/), AWS (https://ip-ranges.amazonaws.com/ip-ranges.json), Fastly (https://api.fastly.com/public-ip-list), and Google Cloud (https://www.gstatic.com/ipranges/cloud.json).
 
-[`middleware/client_ip.go:85-110`](../../middleware/client_ip.go#L85-L110)
+[`middleware/client_ip.go:56-117`](../../middleware/client_ip.go#L56-L117)
 
 ### X-Forwarded-For with Proxy Count
 
@@ -59,9 +59,15 @@ r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 })
 ```
 
-**Warning**: This is brittle. If you add or remove a proxy, the proxy count becomes silently wrong and you may start trusting attacker-supplied IPs. Prefer `ClientIPFromXFF` with explicit CIDRs whenever possible.
+**Prefer `ClientIPFromXFF` with explicit CIDRs** whenever you can — it cannot off-by-one and is robust to architecture changes. Use this counting variant only when proxy IPs are dynamic and unpublishable.
 
-[`middleware/client_ip.go:138-162`](../../middleware/client_ip.go#L138-L162)
+To verify your count is correct, **send a request from a known IP** and confirm `GetClientIP` returns that IP. If it returns a proxy IP, your count is too LOW — a client can spoof their IP, fix immediately. If it returns "", your count is too HIGH — no leak, but no client IP either.
+
+This middleware reads ONLY X-Forwarded-For; it does not inspect `r.RemoteAddr`. Guarantee at the network layer (security group / firewall) that only your proxies can reach this server.
+
+If the XFF chain has fewer than `numTrustedProxies` entries, no client IP is set (fail-closed).
+
+[`middleware/client_ip.go:119-173`](../../middleware/client_ip.go#L119-L173)
 
 ### Direct Internet (No Proxy)
 
@@ -77,7 +83,7 @@ r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 
 Behind a reverse proxy, `RemoteAddr` is the proxy's IP, not the client's.
 
-[`middleware/client_ip.go:176-187`](../../middleware/client_ip.go#L176-L187)
+[`middleware/client_ip.go:175-198`](../../middleware/client_ip.go#L175-L198)
 
 ### Retrieving the Client IP
 
@@ -99,7 +105,7 @@ r.Get("/admin", func(w http.ResponseWriter, r *http.Request) {
 })
 ```
 
-[`middleware/client_ip.go:189-207`](../../middleware/client_ip.go#L189-L207)
+[`middleware/client_ip.go:200-218`](../../middleware/client_ip.go#L200-L218)
 
 ### Security Properties
 
@@ -172,8 +178,6 @@ This is useful for:
 
 ## Decisions
 
-[`middleware/realip.go:16-27`](../../middleware/realip.go#L16-L27)
-
 The legacy `RealIP` middleware is deprecated. It was vulnerable to IP spoofing attacks (GHSA-3fxj-6jh8-hvhx, GHSA-rjr7-jggh-pgcp, GHSA-9g5q-2w5x-hmxf) because it:
 - Mutated `r.RemoteAddr`, allowing misconfigured header detection to impact all downstream code
 - Unconditionally trusted multiple headers in priority order, without requiring the user to choose
@@ -184,4 +188,4 @@ The new `ClientIPFrom*` middlewares fix these issues by:
 - Requiring explicit opt-in to a specific source (header name, CIDR list, or proxy count)
 - Using rightmost-untrusted logic for XFF chains, which is secure against prepended spoofs
 
-See the example in `middleware/client_ip_example_test.go` for migration guidance.
+See the example in `middleware/client_ip_example_test.go` for migration guidance. Commit bc02284e9db2 replaced prose documentation on counting proxies with a recipe approach and added a worked example (`Example_clientIPFromXFFTrustedProxies`) showing how client-prepended entries are ignored when using the counting variant with explicit XFF chain structures.

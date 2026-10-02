@@ -6,7 +6,7 @@ Handle response compression, request charset validation, content encoding filter
 
 ## Response Compression
 
-The `Compress` middleware [`middleware/compress.go:40-43`](../../middleware/compress.go#L40-L43) automatically compresses HTTP response bodies based on the client's `Accept-Encoding` header. It supports gzip and deflate encodings by default and can be extended with custom algorithms.
+The `Compress` middleware [`middleware/compress.go:34-48`](../../middleware/compress.go#L34-L48) automatically compresses HTTP response bodies based on the client's `Accept-Encoding` header. It supports gzip and deflate encodings by default and can be extended with custom algorithms.
 
 Create a compressor and add it to your router:
 
@@ -34,7 +34,7 @@ func main() {
 }
 ```
 
-The middleware [`middleware/compress.go:29-43`](../../middleware/compress.go#L29-L43) wraps response bodies with a compression writer when the client accepts the encoding. It automatically:
+The middleware [`middleware/compress.go:199-220`](../../middleware/compress.go#L199-L220) wraps response bodies with a compression writer when the client accepts the encoding. It automatically:
 
 - Parses the `Accept-Encoding` request header to determine what algorithms the client supports
 - Selects the best encoder based on configured precedence
@@ -43,11 +43,11 @@ The middleware [`middleware/compress.go:29-43`](../../middleware/compress.go#L29
 
 ### Compression Levels
 
-Pass a compression level (1-9, where 1 is fastest and 9 is best compression) as the first argument. Level 5 is a sensible default balancing speed and compression ratio. [`middleware/compress.go:39`](../../middleware/compress.go#L39)
+Pass a compression level (1-9, where 1 is fastest and 9 is best compression) as the first argument. Level 5 is a sensible default balancing speed and compression ratio. [`middleware/compress.go:44`](../../middleware/compress.go#L44)
 
 ### Content Type Filtering
 
-By default, the middleware compresses [`middleware/compress.go:16-27`](../../middleware/compress.go#L16-L27) text/html, text/css, text/plain, text/javascript, application/javascript, application/json, and image/svg+xml.
+By default, the middleware compresses [`middleware/compress.go:16-32`](../../middleware/compress.go#L16-L32) text/html, text/css, text/plain, text/javascript, text/markdown, text/csv, text/vtt, application/javascript, application/x-javascript, application/json, application/atom+xml, application/rss+xml, application/xml, text/xml, and image/svg+xml.
 
 Specify custom types when creating the middleware:
 
@@ -55,7 +55,7 @@ Specify custom types when creating the middleware:
 r.Use(middleware.Compress(5, "application/json", "text/*"))
 ```
 
-Wildcard patterns like `text/*` are supported [`middleware/compress.go:68-78`](../../middleware/compress.go#L68-L78) to match any subtype. Only the `/*` suffix pattern is allowed.
+Wildcard patterns like `text/*` are supported [`middleware/compress.go:82-86`](../../middleware/compress.go#L82-L86) to match any subtype. Only the `<type>/*` suffix pattern is allowed. Catch-all wildcards (`*/*` and `/*`) are rejected [`middleware/compress.go:83-85`](../../middleware/compress.go#L83-L85).
 
 ### Custom Encoders
 
@@ -70,11 +70,11 @@ compressor.SetEncoder("br", func(w io.Writer, level int) io.Writer {
 r.Use(compressor.Handler)
 ```
 
-The encoder function receives the response writer and compression level, and returns a writer that compresses data. [`middleware/compress.go:147-183`](../../middleware/compress.go#L147-L183)
+The encoder function receives the response writer and compression level, and returns a writer that compresses data. [`middleware/compress.go:159-195`](../../middleware/compress.go#L159-L195)
 
 ### Important: Set Content-Type Header
 
-The middleware only compresses responses with an explicit `Content-Type` header set in the handler [`middleware/compress.go:34-37`](../../middleware/compress.go#L34-L37). If you don't set it, the response body will not be compressed:
+The middleware only compresses responses with an explicit `Content-Type` header set in the handler [`middleware/compress.go:39-42`](../../middleware/compress.go#L39-L42). If you don't set it, the response body will not be compressed:
 
 ```go
 r.Get("/data", func(w http.ResponseWriter, r *http.Request) {
@@ -193,4 +193,8 @@ The middleware operates on the `RoutePath` from chi's route context [`middleware
 
 ## Decisions
 
-**Gzip preferred over deflate**: The Compress middleware [`middleware/compress.go:102-117`](../../middleware/compress.go#L102-L117) prioritizes gzip encoding over deflate because older browsers incorrectly handle deflate compression (expecting raw DEFLATE without zlib wrapper). Modern browsers handle both, but gzip is more reliable and consistently implemented across clients.
+**Gzip preferred over deflate**: The Compress middleware [`middleware/compress.go:114-129`](../../middleware/compress.go#L114-L129) prioritizes gzip encoding over deflate because older browsers incorrectly handle deflate compression (expecting raw DEFLATE without zlib wrapper). Modern browsers handle both, but gzip is more reliable and consistently implemented across clients.
+
+**Reject catch-all wildcard patterns**: NewCompressor rejects `*/*` and `/*` patterns [[cite:middleware/compress.go:69-71, 83-85]] because compressing every response wastes CPU on already-compressed types like zip, jpeg, and png. Users should pass explicit content types instead.
+
+**Expanded default compressible types**: The default list now includes text/markdown, text/csv, text/vtt, application/xml, and text/xml [[cite:middleware/compress.go:21-23, 29-30]] because these formats compress effectively and are commonly served by web applications.
