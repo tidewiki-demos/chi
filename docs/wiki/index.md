@@ -2,7 +2,7 @@
 
 <!-- Maintained by Tidewiki. Edits are kept on later updates; wrap text in tidewiki:keep markers to freeze it. -->
 
-chi is a lightweight, idiomatic HTTP router for building Go services. [`README.md:7-9`](../../README.md#L7-L9) It's designed especially for REST APIs that need to stay maintainable as they grow, using Go's `context` package to manage request-scoped values and signaling across handler chains. [`README.md:8-9`](../../README.md#L8-L9)
+chi is a lightweight, idiomatic HTTP router for building Go services. [`README.md:6-9`](../../README.md#L6-L9) It's designed especially for REST APIs that need to stay maintainable as they grow, using Go's `context` package to manage request-scoped values and signaling across handler chains. [`README.md:8-9`](../../README.md#L8-L9)
 
 The router itself is compact—under 1000 lines of code [`README.md:30`](../../README.md#L30)—yet powerful enough for production use at companies like Pressly, Cloudflare, and Heroku. [`README.md:35`](../../README.md#L35) chi works with 100% standard `net/http` interfaces, so any ecosystem middleware compatible with the standard library will work with chi. [`README.md:32`](../../README.md#L32)
 
@@ -21,13 +21,13 @@ graph TB
     E -.-> G
 ```
 
-**Router**: [`README.md:185-249`](../../README.md#L185-L249) The core `Router` interface provides methods like `Get()`, `Post()`, `Route()`, and `Use()` to define and compose request handlers. You create one with `chi.NewRouter()`.
+**Router**: [`README.md:185-234`](../../README.md#L185-L234) The core `Router` interface provides methods like `Get()`, `Post()`, `Route()`, and `Use()` to define and compose request handlers. You create one with `chi.NewRouter()`.
 
-**Route Matching**: [`README.md:177-178`](../../README.md#L177-L178) chi uses a Patricia Radix trie for fast, efficient route matching. Routes support named parameters (e.g., `/users/{userID}`), wildcards, and regex patterns. [`README.md:251-254`](../../README.md#L251-L254)
+**Route Matching**: [`README.md:177-178`](../../README.md#L177-L178) chi uses a Patricia Radix trie for fast, efficient route matching. Routes support named parameters (e.g., `/users/{userID}`), wildcards, and regex patterns. [`README.md:252-255`](../../README.md#L252-L255)
 
-**Middleware & Handlers**: [`README.md:259-262`](../../README.md#L259-L262) Middlewares are standard `net/http` handlers with no special chi magic. They wrap handlers and can pass request-scoped values through Go's `context` package. [`README.md:268-285`](../../README.md#L268-L285)
+**Middleware & Handlers**: [`README.md:260-263`](../../README.md#L260-L263) Middlewares are standard `net/http` handlers with no special chi magic. They wrap handlers and can pass request-scoped values through Go's `context` package. [`README.md:269-286`](../../README.md#L269-L286)
 
-**Context Values**: [`README.md:309-327`](../../README.md#L309-L327) URL parameters and custom data live on the request context. Retrieve them with `chi.URLParam(r, "paramName")` or `r.Context().Value("key")`.
+**Context Values**: [`README.md:310-328`](../../README.md#L310-L328) URL parameters and custom data live on the request context. Retrieve them with `chi.URLParam(r, "paramName")` or `r.Context().Value("key")`.
 
 ## Quick Start
 
@@ -90,7 +90,7 @@ r.Use(middleware.Timeout(60 * time.Second))
 
 ## Middleware Ecosystem
 
-chi ships with 25+ built-in middlewares [`README.md:338-368`](../../README.md#L338-L368) covering logging, compression, authentication, rate limiting, and more. Beyond that, [`README.md:472-487`](../../README.md#L472-L487) the go-chi organization maintains additional packages like CORS, JWT auth, rate limiting, and structured logging.
+chi ships with 25+ built-in middlewares [`README.md:338-369`](../../README.md#L338-L369) covering logging, compression, authentication, rate limiting, and more. Beyond that, [`README.md:478-493`](../../README.md#L478-L493) the go-chi organization maintains additional packages like CORS, JWT auth, rate limiting, and structured logging.
 
 All middlewares follow the standard `func(http.Handler) http.Handler` signature, so they work with any Go HTTP router or framework.
 

@@ -1,8 +1,8 @@
 {
   "version": 1,
-  "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
+  "commit": "5bd1f81b3f25936a6609806aafff59b6c227a0db",
   "language": "en",
-  "updated_at": "2026-10-02T10:00:01Z",
+  "updated_at": "2026-10-02T12:07:08Z",
   "pages": {
     "built-in-middleware": {
       "title": "Built-in Middleware",
@@ -58,8 +58,8 @@
         "middleware/wrap_writer.go",
         "middleware/wrap_writer_test.go"
       ],
-      "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
-      "hash": "451f1e8fe17b2ab6e8e7d01391f9a733ee3e71bc1e3c83b76525c2e930a0a642"
+      "commit": "5bd1f81b3f25936a6609806aafff59b6c227a0db",
+      "hash": "24dc044ed832fa1a5caa396331421f662e8d6f253f679ab8b9b62f25b5a032dc"
     },
     "context-values": {
       "title": "Context Values and Request Handling",
@@ -68,8 +68,8 @@
         "context.go",
         "context_test.go"
       ],
-      "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
-      "hash": "c6a6376e3905c3fdb20df4b4a2aa5ae2a4750eaa239425c4492ecde0309842dd"
+      "commit": "5bd1f81b3f25936a6609806aafff59b6c227a0db",
+      "hash": "5b44c3fb6983a95196ac648a96499c0841225359a78352dbbcb85706919b8775"
     },
     "examples-rest-api": {
       "title": "REST API Examples",
@@ -115,8 +115,8 @@
       "files": [
         "README.md"
       ],
-      "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
-      "hash": "0ef2e2f300692be87b94de634ddc2343f3295b8b443900d9a2479aab1d1ec9b2"
+      "commit": "5bd1f81b3f25936a6609806aafff59b6c227a0db",
+      "hash": "eb8c526b461a4762dd3da83c40d0bc3f5ae9079502991c5cc7284f8ae85ae3a0"
     },
     "index": {
       "title": "Overview",
@@ -127,8 +127,8 @@
         "README.md",
         "go.mod"
       ],
-      "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
-      "hash": "cf907f56fd11ade3524287f1418d615168cc51c444236dac5b7f995a0b2f4cd6"
+      "commit": "5bd1f81b3f25936a6609806aafff59b6c227a0db",
+      "hash": "51fcb37c74884289117e623a1a87a480b663e5834c676ff767a42d7cd47d529a"
     },
     "middleware-advanced": {
       "title": "Advanced Middleware Patterns",
@@ -146,8 +146,8 @@
         "middleware/wrap_writer.go",
         "middleware/wrap_writer_test.go"
       ],
-      "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
-      "hash": "e622c3e815401e694b6a195d90e8b0addba9c326c808a1aa578c123eaac6dc0d"
+      "commit": "5bd1f81b3f25936a6609806aafff59b6c227a0db",
+      "hash": "0b40297f62c10c53c6bac07a6b7db06ef9a133bd1a6d80b838078db7c99a2467"
     },
     "middleware-content-handling": {
       "title": "Content Encoding and Compression",
@@ -162,8 +162,8 @@
         "middleware/url_format.go",
         "middleware/url_format_test.go"
       ],
-      "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
-      "hash": "7b050aeb6e006a2c2cfc1e2b028c615172680b004f2d0b707cb24e1fb6c63222"
+      "commit": "5bd1f81b3f25936a6609806aafff59b6c227a0db",
+      "hash": "4eba424847fd83f07aca629fd3d029c4bbe980b0d100e7bad44e44dbce8cfd89"
     },
     "middleware-fundamentals": {
       "title": "Middleware Fundamentals",
@@ -185,8 +185,8 @@
         "middleware/recoverer.go",
         "middleware/recoverer_test.go"
       ],
-      "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
-      "hash": "2ea1d0b76a4bedacb25ea04686997a8e66629d80be99d33c5202cb1422f89d61"
+      "commit": "5bd1f81b3f25936a6609806aafff59b6c227a0db",
+      "hash": "36744231d84842dcbccbc2c38dfabb8461e0fcc6fd2a7551fbe76bce62ba2dba"
     },
     "middleware-security": {
       "title": "Security and Request Filtering",
@@ -216,8 +216,8 @@
         "tree.go",
         "tree_test.go"
       ],
-      "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
-      "hash": "369e33bffb52252744241a26166a55fc059b64decf2aee13c5ad87e6293b04b0"
+      "commit": "5bd1f81b3f25936a6609806aafff59b6c227a0db",
+      "hash": "7fd2264f9f42b551947d7052ebc0589ba7b19bf28a74af944f1b223ae939240f"
     },
     "routing-basics": {
       "title": "Routing Basics",
@@ -229,8 +229,8 @@
         "chi.go",
         "mux.go"
       ],
-      "commit": "12a12b6e877a5614fb71fc0ae7fccd24560f8c0f",
-      "hash": "03c9a1c5bbe9779b220a3041d4a76f3e71548c3ddd99893c20948424a22e0928"
+      "commit": "5bd1f81b3f25936a6609806aafff59b6c227a0db",
+      "hash": "e43cf5d86ff662962b98085aa0f7fe6451bb7c9f64a259ac2b1135a35015a18f"
     }
   },
   "unassigned": [

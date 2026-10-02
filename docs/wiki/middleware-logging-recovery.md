@@ -100,7 +100,7 @@ When a panic occurs:
 1. The panic is caught [`middleware/recoverer.go:24-30`](../../middleware/recoverer.go#L24-L30)
 2. If a log entry exists, `Panic` is called on it with the recovered value and stack trace [`middleware/recoverer.go:32-34`](../../middleware/recoverer.go#L32-L34)
 3. HTTP 500 is written to the response [`middleware/recoverer.go:39-41`](../../middleware/recoverer.go#L39-L41)
-4. The stack trace is printed to stderr with color formatting [`middleware/recoverer.go:54-64`](../../middleware/recoverer.go#L54-L64)
+4. The stack trace is printed to stderr with color formatting [`middleware/recoverer.go:54-71`](../../middleware/recoverer.go#L54-L71)
 
 ### Special Case: http.ErrAbortHandler
 
@@ -123,10 +123,27 @@ Panics are formatted with colored output highlighting the immediate panic locati
       /path/to/runtime/proc.go:250
 ```
 
-[`middleware/recoverer.go:54-109`](../../middleware/recoverer.go#L54-L109)
+[`middleware/recoverer.go:54-71`](../../middleware/recoverer.go#L54-L71)
+
+### NoColor Support
+
+The logger respects the `NoColor` setting of `DefaultLogFormatter` in panic stack traces. When `NoColor` is true, ANSI color codes are suppressed from panic output, which is useful for terminals that do not support them (such as Windows) or when capturing output [`middleware/logger.go:168-170`](../../middleware/logger.go#L168-L170).
+
+```go
+r := chi.NewRouter()
+r.Use(middleware.RequestLogger(&middleware.DefaultLogFormatter{
+	Logger:  log.New(os.Stdout, "", log.LstdFlags),
+	NoColor: true,
+}))
+r.Use(middleware.Recoverer)
+```
 
 ## Decisions
 
 ### Logger Placement Before Recoverer
 
 Logger must be registered before Recoverer in the middleware chain. This ensures that request logging happens even when a panic is caught and recovered, providing complete visibility into requests that fail with panics [`middleware/logger.go:32-38`](../../middleware/logger.go#L32-L38).
+
+### NoColor in Panic Output
+
+The panic stack trace respects the `NoColor` flag from `DefaultLogFormatter` rather than always using colored output. The `Panic` method now threads the `useColor` flag through to the stack trace formatter, ensuring consistent behavior between request logs and panic output [`middleware/logger.go:168-170`](../../middleware/logger.go#L168-L170) and [`middleware/recoverer.go:58-71`](../../middleware/recoverer.go#L58-L71). This addresses the issue where panic output would ignore the `NoColor` setting and always emit ANSI color codes.

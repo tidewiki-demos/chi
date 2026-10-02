@@ -29,7 +29,7 @@ If you already have access to the context directly (for example, in middleware o
 userID := chi.URLParamFromCtx(ctx, "userID")
 ```
 
-Both functions [`context.go:10-15`](../../context.go#L10-L15) [`context.go:18-23`](../../context.go#L18-L23) return an empty string if the parameter is not found.
+Both functions [`context.go:10-16`](../../context.go#L10-L16) [`context.go:18-24`](../../context.go#L18-L24) return an empty string if the parameter is not found.
 
 ## Routing Context
 
@@ -49,7 +49,7 @@ func MyMiddleware(next http.Handler) http.Handler {
 }
 ```
 
-[`context.go:27-30`](../../context.go#L27-L30) This function safely extracts the routing context and returns `nil` if none is set.
+[`context.go:26-31`](../../context.go#L26-L31) This function safely extracts the routing context and returns `nil` if none is set.
 
 ### Route Pattern
 
@@ -70,7 +70,7 @@ func Instrument(next http.Handler) http.Handler {
 }
 ```
 
-[`context.go:109-134`](../../context.go#L109-L134) The `RoutePattern()` method joins all matched patterns across nested routers and cleans up intermediate wildcards.
+[`context.go:136-161`](../../context.go#L136-L161) The `RoutePattern()` method joins all matched patterns across nested routers and cleans up intermediate wildcards.
 
 ## Passing Values Through Middleware
 
@@ -99,7 +99,7 @@ This pattern is standard Go and works seamlessly with chi's middleware chain. Se
 
 ## Context Structure
 
-[`context.go:42-79`](../../context.go#L42-L79) The `Context` struct stores:
+[`context.go:43-82`](../../context.go#L43-L82) The `Context` struct stores:
 
 - **URLParams**: A stack of all captured parameters across nested routers
 - **RoutePatterns**: All matched patterns throughout the request lifecycle
@@ -110,7 +110,7 @@ The context is managed by chi and reset after each request. You typically do not
 
 ## URL Parameters Structure
 
-[`context.go:146-155`](../../context.go#L146-L155) `RouteParams` is a simple struct holding parallel `Keys` and `Values` slices. The `URLParam()` method searches from the end backward, allowing nested routers to shadow parameters from parent routers.
+[`context.go:173-176`](../../context.go#L173-L176) `RouteParams` is a simple struct holding parallel `Keys` and `Values` slices. The `URLParam()` method searches from the end backward, allowing nested routers to shadow parameters from parent routers.
 
 ## Getting the Complete Route Pattern
 
@@ -129,4 +129,28 @@ r.Route("/v1", func(r chi.Router) {
 // Not: "/v1/*resources/*/{resourceID}"
 ```
 
-[`context_test.go:24-93`](../../context_test.go#L24-L93) This behavior is tested to ensure patterns remain clean across router hierarchies.
+[`context_test.go:8-96`](../../context_test.go#L8-L96) This behavior is tested to ensure patterns remain clean across router hierarchies.
+
+## Cloning Routing Context
+
+The `Clone()` method creates a deep copy of a routing context for use outside the request/response lifecycle, such as in goroutines that outlive the request handler:
+
+```go
+func MyHandler(w http.ResponseWriter, r *http.Request) {
+	rctx := chi.RouteContext(r.Context())
+	ctxCopy := rctx.Clone()
+	
+	go func() {
+		// Safe to use ctxCopy after handler returns
+		userID := ctxCopy.URLParam("userID")
+	}()
+	
+	w.WriteHeader(http.StatusOK)
+}
+```
+
+[`context.go:101-123`](../../context.go#L101-L123) `Clone()` must be called before the request handler returns; after that, the original context is reset and reused by another request. The method deep-copies all reference fields (slices, maps, and pointers) and detaches the clone from the request's context, which would be canceled once the request finishes.
+
+## Decisions
+
+**Clone method added** (commit 15767233591f): The `Clone()` method enables safe use of routing contexts in asynchronous operations that outlive the request handler. This is useful for background tasks, mirror testing, and other scenarios where the context needs to persist after the request is served. The method must be called before the handler returns to avoid racing with context reset and reuse.
