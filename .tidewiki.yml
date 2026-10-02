@@ -1,0 +1,44 @@
+# Tidewiki configuration. Every key is optional; these are the defaults.
+version: 1
+language: en              # language the wiki is written in
+wiki_dir: docs/wiki
+
+model:
+  provider: bedrock       # anthropic | openai | azure | gemini | bedrock | vertexai | ollama
+  name: eu.anthropic.claude-sonnet-5-5
+  pricing: { input: 2.2, output: 11.0 }   # Bedrock eu-west-1, EU inference profile
+  # effort: medium        # low | medium | high | xhigh | max; the provider's default when unset
+  # api_base: https://llm-gateway.internal/v1   # any OpenAI-compatible endpoint (provider: openai)
+
+include: ["**/*"]
+# Files that look like they hold credentials are never sent to a model: list them in `exclude`,
+# or in `allow` once a person has checked they may be documented (values that look like
+# secrets are still redacted). Suspicious files in neither list are held back and reported.
+exclude: []
+allow: []
+# Always excluded because of their names (not configurable):
+#   testdata/cert.pem
+#   testdata/key.pem
+max_file_bytes: 100000
+max_pages: 30
+max_cost: 4               # stop before starting if the estimate is higher (USD)
+full_regen_threshold: 0.4
+
+publish:
+  - pr                    # open or update a pull/merge request with the changes
+  # - wiki                # copy the pages to the platform's native wiki after merge
+  # - site                # build an offline website in tidewiki-site/
+
+# target:                 # publish the wiki to another repository instead
+#   repo: acme/my-service-wiki
+agents_files: false       # also maintain AGENTS.md and llms.txt pointing to the wiki
+
+# Extra guidance for the model (audience, tone, glossary, sections every page needs...). It is
+# added to Tidewiki's own instructions, never replaces them. Up to 4000 characters.
+# instructions: |
+#   Readers are on-call engineers: start every page with how to tell the component is healthy.
+# instructions_file: docs/tidewiki-instructions.md
+
+instructions: |
+  Readers are Go developers who are adopting chi in their own services. When a page describes something a
+  user of the library calls, include a short usage example in Go next to the explanation.
