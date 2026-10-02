@@ -1513,6 +1513,43 @@ func TestMountingSimilarPattern(t *testing.T) {
 	}
 }
 
+// TestMountingSelf ensures Mount() panics instead of wiring a router (or an
+// inline mux derived from it via With()/Group(), which shares the same
+// underlying tree) back onto itself. Without this guard, any request that
+// doesn't match a defined route recurses through the same mount forever,
+// spinning a goroutine at 100% CPU instead of falling through to a 404.
+// See https://github.com/go-chi/chi/issues/843.
+func TestMountingSelf(t *testing.T) {
+	t.Run("direct self-mount", func(t *testing.T) {
+		defer func() {
+			if recover() == nil {
+				t.Error("expected panic()")
+			}
+		}()
+
+		r := NewRouter()
+		r.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte("pong"))
+		})
+		r.Mount("/", r)
+	})
+
+	t.Run("mount of inline mux sharing the same tree", func(t *testing.T) {
+		defer func() {
+			if recover() == nil {
+				t.Error("expected panic()")
+			}
+		}()
+
+		r := NewRouter().With(func(next http.Handler) http.Handler { return next })
+		r.Mount("/", r.Group(func(r Router) {
+			r.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
+				w.Write([]byte("pong"))
+			})
+		}))
+	})
+}
+
 func TestMuxEmptyParams(t *testing.T) {
 	r := NewRouter()
 	r.Get(`/users/{x}/{y}/{z}`, func(w http.ResponseWriter, r *http.Request) {
@@ -2116,9 +2153,7 @@ func BenchmarkMux(b *testing.B) {
 			r, _ := http.NewRequest("GET", path, nil)
 
 			b.ReportAllocs()
-			b.ResetTimer()
-
-			for i := 0; i < b.N; i++ {
+			for b.Loop() {
 				mx.ServeHTTP(w, r)
 			}
 		})

@@ -321,9 +321,8 @@ func BenchmarkThrottle(b *testing.B) {
 
 	req := httptest.NewRequest("GET", "/", nil)
 
-	b.ResetTimer()
 	b.ReportAllocs()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		w := httptest.NewRecorder()
 		handler.ServeHTTP(w, req)
 	}

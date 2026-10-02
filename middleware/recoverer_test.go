@@ -14,7 +14,7 @@ func panickingHandler(http.ResponseWriter, *http.Request) { panic("foo") }
 
 type testPrintLogger struct{}
 
-func (testPrintLogger) Print(v ...interface{}) {}
+func (testPrintLogger) Print(v ...any) {}
 
 func TestRecoverer(t *testing.T) {
 	r := chi.NewRouter()

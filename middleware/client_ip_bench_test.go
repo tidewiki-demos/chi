@@ -25,7 +25,7 @@ func BenchmarkWalkXFF(b *testing.B) {
 
 		b.Run(fmt.Sprintf("n=%d", n), func(b *testing.B) {
 			b.ReportAllocs()
-			for i := 0; i < b.N; i++ {
+			for b.Loop() {
 				walkXFF(headers, func(entry string) bool {
 					return false // walk to the leftmost entry
 				})
@@ -48,7 +48,7 @@ func BenchmarkWalkXFF_RightmostStop(b *testing.B) {
 
 		b.Run(fmt.Sprintf("n=%d", n), func(b *testing.B) {
 			b.ReportAllocs()
-			for i := 0; i < b.N; i++ {
+			for b.Loop() {
 				walkXFF(headers, func(entry string) bool {
 					return true // stop at the rightmost entry
 				})

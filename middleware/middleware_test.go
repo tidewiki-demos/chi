@@ -8,8 +8,11 @@ import (
 	"path"
 	"reflect"
 	"runtime"
+	"strings"
 	"testing"
 	"time"
+
+	"github.com/go-chi/chi/v5"
 )
 
 var testdataDir string
@@ -17,6 +20,62 @@ var testdataDir string
 func init() {
 	_, filename, _, _ := runtime.Caller(0)
 	testdataDir = path.Join(path.Dir(filename), "/../testdata")
+}
+
+type customMiddleware struct{}
+
+func (c *customMiddleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	for name, headers := range req.Header {
+		if strings.ToLower(name) == "x-custom-header" {
+			if len(headers) == 1 {
+				w.WriteHeader(http.StatusOK)
+				return
+			}
+		}
+	}
+
+	w.WriteHeader(http.StatusUnauthorized)
+}
+
+func TestNew(t *testing.T) {
+	endpoint := "/"
+	r := chi.NewRouter()
+	r.Use(New(&customMiddleware{}))
+	r.Get(endpoint, func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("OK"))
+	})
+
+	t.Run("allows request with custom header", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, endpoint, http.NoBody)
+		req.Header.Set("X-Custom-Header", "abc123")
+
+		r.ServeHTTP(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("new: unexpected response code: got %d, want %d", w.Code, http.StatusOK)
+		}
+	})
+
+	t.Run("rejects request without custom header", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, endpoint, http.NoBody)
+
+		r.ServeHTTP(w, req)
+
+		if w.Code != http.StatusUnauthorized {
+			t.Errorf("new: unexpected response code: got %d, want %d", w.Code, http.StatusUnauthorized)
+		}
+	})
+}
+
+func Test_contextKey_String(t *testing.T) {
+	k := &contextKey{
+		name: "test",
+	}
+	if got := k.String(); got != "chi/middleware context value test" {
+		t.Errorf("got: %q, expected: %q", got, "chi/middleware context value test")
+	}
 }
 
 func TestWrapWriterHTTP2(t *testing.T) {
@@ -146,7 +205,7 @@ func assertError(t *testing.T, err error) {
 	}
 }
 
-func assertEqual(t *testing.T, a, b interface{}) {
+func assertEqual(t *testing.T, a, b any) {
 	t.Helper()
 	if !reflect.DeepEqual(a, b) {
 		t.Fatalf("expecting values to be equal but got: '%v' and '%v'", a, b)

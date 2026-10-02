@@ -22,21 +22,94 @@ func (r *readerFromRecorder) ReadFrom(src io.Reader) (int64, error) {
 	return io.Copy(r.ResponseRecorder.Body, src)
 }
 
-func TestHttpFancyWriterRemembersWroteHeaderWhenFlushed(t *testing.T) {
-	f := &httpFancyWriter{basicWriter: basicWriter{ResponseWriter: httptest.NewRecorder()}}
-	f.Flush()
+func TestWrapResponseWriterStatusWhenFlushed(t *testing.T) {
+	for _, writer := range []struct {
+		name string
+		wrap func(http.ResponseWriter) WrapResponseWriter
+	}{
+		{"flushWriter", func(w http.ResponseWriter) WrapResponseWriter {
+			return &flushWriter{basicWriter{ResponseWriter: w}}
+		}},
+		{"flushHijackWriter", func(w http.ResponseWriter) WrapResponseWriter {
+			return &flushHijackWriter{basicWriter{ResponseWriter: w}}
+		}},
+		{"httpFancyWriter", func(w http.ResponseWriter) WrapResponseWriter {
+			return &httpFancyWriter{basicWriter{ResponseWriter: w}}
+		}},
+		{"http2FancyWriter", func(w http.ResponseWriter) WrapResponseWriter {
+			return &http2FancyWriter{basicWriter{ResponseWriter: w}}
+		}},
+	} {
+		t.Run(writer.name, func(t *testing.T) {
+			for _, status := range []struct {
+				name string
+				code int
+				want int
+			}{
+				{"implicit", 0, http.StatusOK},
+				{"explicit", http.StatusCreated, http.StatusCreated},
+			} {
+				t.Run(status.name, func(t *testing.T) {
+					for _, mode := range []struct {
+						name    string
+						discard bool
+						tee     bool
+					}{
+						{"passthrough", false, false},
+						{"tee", false, true},
+						{"discard", true, false},
+						{"discard-with-tee", true, true},
+					} {
+						t.Run(mode.name, func(t *testing.T) {
+							original := &httptest.ResponseRecorder{
+								HeaderMap: make(http.Header),
+								Body:      new(bytes.Buffer),
+							}
+							wrap := writer.wrap(original)
+							var tee bytes.Buffer
+							if mode.tee {
+								wrap.Tee(&tee)
+							}
+							if mode.discard {
+								wrap.Discard()
+							}
+							if status.code != 0 {
+								wrap.WriteHeader(status.code)
+							}
 
-	if !f.wroteHeader {
-		t.Fatal("want Flush to have set wroteHeader=true")
-	}
-}
+							wrap.(http.Flusher).Flush()
+							assertEqual(t, status.want, wrap.Status())
+							assertEqual(t, !mode.discard, original.Flushed)
+							assertEqual(t, 0, wrap.BytesWritten())
 
-func TestHttp2FancyWriterRemembersWroteHeaderWhenFlushed(t *testing.T) {
-	f := &http2FancyWriter{basicWriter{ResponseWriter: httptest.NewRecorder()}}
-	f.Flush()
-
-	if !f.wroteHeader {
-		t.Fatal("want Flush to have set wroteHeader=true")
+							// Flushing commits the status, even before any body is written.
+							wrap.WriteHeader(http.StatusInternalServerError)
+							_, err := wrap.Write([]byte("body"))
+							assertNoError(t, err)
+							assertNoError(t, http.NewResponseController(wrap).Flush())
+							assertEqual(t, status.want, wrap.Status())
+							assertEqual(t, 4, wrap.BytesWritten())
+							if mode.tee {
+								assertEqual(t, "body", tee.String())
+							}
+							if mode.discard {
+								assertEqual(t, false, original.Flushed)
+								assertEqual(t, 0, original.Code)
+								assertEqual(t, "", original.Body.String())
+								original.WriteHeader(http.StatusAccepted)
+								_, err := original.Write([]byte("replacement"))
+								assertNoError(t, err)
+								assertEqual(t, http.StatusAccepted, original.Code)
+								assertEqual(t, "replacement", original.Body.String())
+							} else {
+								assertEqual(t, status.want, original.Code)
+								assertEqual(t, "body", original.Body.String())
+							}
+						})
+					}
+				})
+			}
+		})
 	}
 }
 

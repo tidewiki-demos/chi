@@ -5,6 +5,7 @@ import (
 	"net"
 	"net/http"
 	"net/netip"
+	"slices"
 	"strings"
 )
 
@@ -226,8 +227,7 @@ func GetClientIPAddr(ctx context.Context) netip.Addr {
 // comma-separated entries in order received — so an attacker cannot pick
 // which value security logic sees by sending a duplicate header.
 func walkXFF(headers []string, visit func(entry string) bool) {
-	for hi := len(headers) - 1; hi >= 0; hi-- {
-		h := headers[hi]
+	for _, h := range slices.Backward(headers) {
 		for h != "" {
 			var v string
 			if i := strings.LastIndexByte(h, ','); i >= 0 {
